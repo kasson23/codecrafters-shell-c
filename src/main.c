@@ -1,29 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 // helpful commands
 /*
 ' gcc -Wall -Wextra main.c -o main.exe '
-' '
+' .\main.exe '
 */
 int main()
 {
 
-  // Create an integer variable that will store the number we get from the user
-  char userInput[100];
-  char errorMsg[] = ": command not found";
-  char output[200];
+  while (true)
+  {
+    printf("$ ");
 
-  printf("$ ");
-  fgets(userInput, sizeof(userInput), stdin);
+    // Wait for user input
+    char input[100];
+    fgets(input, 100, stdin);
 
-  // Remove newline from fgets
-  userInput[strcspn(userInput, "\n")] = 0;
-
-  strcpy(output, userInput);
-  strcat(output, errorMsg);
-
-  printf("%s\n", output);
+    // Remove the trailing newline
+    input[strlen(input) - 1] = '\0';
+    printf("%s: command not found\n", input);
+  }
 
   return 0;
 }
