@@ -14,6 +14,7 @@ int main()
   char errorMsg[] = ": command not found";
   char output[200];
 
+  printf("$ ");
   fgets(userInput, sizeof(userInput), stdin);
 
   // Remove newline from fgets
