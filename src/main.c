@@ -46,12 +46,13 @@ int main()
 
   while (run)
   {
-    printf("$ ");
-
-    // Wait for user input
     char input[100];
     char cmd[100];
 
+    printf("$ ");
+    fflush(stdout);
+
+    // Wait for user input
     fgets(input, 100, stdin);
 
     int length = strlen(input);
