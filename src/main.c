@@ -83,7 +83,7 @@ int main()
     if (echo == 0)
     {
       printf("%s\n", input);
-      continue;
+      return 0;
     }
 
     printf("%s: command not found\n", input);
