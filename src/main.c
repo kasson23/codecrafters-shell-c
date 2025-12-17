@@ -82,8 +82,8 @@ int main()
     int echo = strcmp(cmd, "echo");
     if (echo == 0)
     {
-      printf("%s\n", input);
-      continue;
+      printf("%s\n\n", input);
+      return 0;
     }
 
     printf("%s: command not found\n", input);
