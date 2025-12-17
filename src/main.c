@@ -50,7 +50,6 @@ int main()
     char cmd[100];
 
     printf("$ ");
-    fflush(stdout);
 
     // Wait for user input
     fgets(input, 100, stdin);
@@ -84,7 +83,6 @@ int main()
     if (echo == 0)
     {
       printf("%s\n", input);
-      printf("$ ");
       continue;
     }
 
