@@ -50,7 +50,7 @@ void find_path_of_type_cmd(char paths[], char executable_name[])
         struct stat st;
         if (stat(full_path, &st) == 0 && S_ISREG(st.st_mode))
         {
-          printf("%s is %s\n", executable_name, path);
+          printf("%s is %s\n", executable_name, full_path);
           found = true;
           break;
         }
@@ -68,15 +68,15 @@ void find_path_of_type_cmd(char paths[], char executable_name[])
 
           if (strcmp(filename, executable_name) == 0)
           {
-            // Build full path
+            // Build full path (print without .exe extension)
             char full_path[1024];
-            snprintf(full_path, sizeof(full_path), "%s/%s", path, de->d_name);
+            snprintf(full_path, sizeof(full_path), "%s/%s", path, executable_name);
 
             // Check if file exists and is a regular file
             struct stat st;
             if (stat(full_path, &st) == 0 && S_ISREG(st.st_mode))
             {
-              printf("%s is %s\n", executable_name, path);
+              printf("%s is %s\n", executable_name, full_path);
               found = true;
               break;
             }
