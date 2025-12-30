@@ -2,6 +2,71 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
+#include <sys/stat.h>
+
+void find_path_of_type_cmd(char paths[], char executable_name[])
+{
+  char *paths_copy = strdup(paths);
+  char *remaining = paths_copy;
+  bool found = false;
+
+  while (!found && remaining != NULL)
+  {
+    char *semicolon = strchr(remaining, ';');
+
+    // Extract current directory path
+    char path[260];
+    if (semicolon == NULL)
+    {
+      strcpy(path, remaining);
+      remaining = NULL;
+    }
+    else
+    {
+      strncpy(path, remaining, semicolon - remaining);
+      path[semicolon - remaining] = '\0';
+      remaining = semicolon + 1;
+    }
+
+    // Try to open directory
+    DIR *dir = opendir(path);
+    if (dir == NULL)
+    {
+      continue;
+    }
+
+    struct dirent *de;
+    while ((de = readdir(dir)) != NULL)
+    {
+      // Check if filename matches executable name
+      if (strcmp(de->d_name, executable_name) == 0)
+      {
+        // Build full path
+        char full_path[512];
+        snprintf(full_path, sizeof(full_path), "%s\\%s", path, executable_name);
+
+        // Check if file has execute permissions
+        struct stat st;
+        if (stat(full_path, &st) == 0 && (st.st_mode & S_IXUSR))
+        {
+          printf("%s is %s\n", executable_name, full_path);
+          found = true;
+          break;
+        }
+      }
+    }
+    closedir(dir);
+  }
+
+  if (!found)
+  {
+    printf("%s: not found\n", executable_name);
+  }
+
+  free(paths_copy);
+}
+
 int main()
 {
   // Flush after every print
@@ -21,6 +86,7 @@ int main()
       loop_continue = false;
       break;
     }
+
     char echoinput[5];
     char output[20];
 
@@ -34,30 +100,23 @@ int main()
 
     // Type command
     char typeinput[5];
-    char typeoutput[20];
-
+    char executable_name[20];
     if (strcmp(memcpy(typeinput, user_input, 4), "type") == 0)
     {
-      strcpy(typeoutput, user_input + 5);
+      strcpy(executable_name, user_input + 5);
 
-      if (strcmp(typeoutput, "echo") == 0)
+      if (strcmp(executable_name, "echo") == 0 || strcmp(executable_name, "exit") == 0 || strcmp(executable_name, "type") == 0)
       {
-        printf("echo is a shell builtin\n");
+        printf("%s is a shell builtin\n", executable_name);
+        printf("$ ");
+        continue;
       }
-      else if (strcmp(typeoutput, "exit") == 0)
-      {
-        printf("exit is a shell builtin\n");
-      }
-      else if (strcmp(typeoutput, "type") == 0)
-      {
-        printf("type is a shell builtin\n");
-      }
-      else
-      {
-        printf("%s: not found\n", typeoutput);
-      }
+
+      char *paths = getenv("PATH");
+
+      find_path_of_type_cmd(paths, executable_name);
+
       printf("$ ");
-
       continue;
     }
 
