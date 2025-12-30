@@ -46,9 +46,9 @@ void find_path_of_type_cmd(char paths[], char executable_name[])
         char full_path[1024];
         snprintf(full_path, sizeof(full_path), "%s/%s", path, de->d_name);
 
-        // Check if file exists and is a regular file
+        // Check if file exists, is a regular file, and has execute permissions
         struct stat st;
-        if (stat(full_path, &st) == 0 && S_ISREG(st.st_mode))
+        if (stat(full_path, &st) == 0 && S_ISREG(st.st_mode) && (st.st_mode & S_IXUSR))
         {
           printf("%s is %s\n", executable_name, full_path);
           found = true;
@@ -72,9 +72,9 @@ void find_path_of_type_cmd(char paths[], char executable_name[])
             char full_path[1024];
             snprintf(full_path, sizeof(full_path), "%s/%s", path, executable_name);
 
-            // Check if file exists and is a regular file
+            // Check if file exists, is a regular file, and has execute permissions
             struct stat st;
-            if (stat(full_path, &st) == 0 && S_ISREG(st.st_mode))
+            if (stat(full_path, &st) == 0 && S_ISREG(st.st_mode) && (st.st_mode & S_IXUSR))
             {
               printf("%s is %s\n", executable_name, full_path);
               found = true;
