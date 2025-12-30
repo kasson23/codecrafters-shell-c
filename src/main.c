@@ -13,20 +13,20 @@ void find_path_of_type_cmd(char paths[], char executable_name[])
 
   while (!found && remaining != NULL)
   {
-    char *semicolon = strchr(remaining, ';');
+    char *delimiter = strchr(remaining, ':');
 
     // Extract current directory path
     char path[260];
-    if (semicolon == NULL)
+    if (delimiter == NULL)
     {
       strcpy(path, remaining);
       remaining = NULL;
     }
     else
     {
-      strncpy(path, remaining, semicolon - remaining);
-      path[semicolon - remaining] = '\0';
-      remaining = semicolon + 1;
+      strncpy(path, remaining, delimiter - remaining);
+      path[delimiter - remaining] = '\0';
+      remaining = delimiter + 1;
     }
 
     // Try to open directory
