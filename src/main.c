@@ -39,20 +39,37 @@ void find_path_of_type_cmd(char paths[], char executable_name[])
     struct dirent *de;
     while ((de = readdir(dir)) != NULL)
     {
-      // Check if filename matches executable name
-      if (strcmp(de->d_name, executable_name) == 0)
-      {
-        // Build full path
-        char full_path[512];
-        snprintf(full_path, sizeof(full_path), "%s\\%s", path, executable_name);
+      // Find the last '.' in the filename
+      char *last_dot = strrchr(de->d_name, '.');
 
-        // Check if file has execute permissions
-        struct stat st;
-        if (stat(full_path, &st) == 0 && (st.st_mode & S_IXUSR))
+      if (last_dot == NULL)
+      {
+        continue;
+      }
+
+      // Extract the filename (part before the last '.')
+      char filename[last_dot - de->d_name + 1];
+      strncpy(filename, de->d_name, last_dot - de->d_name);
+      filename[last_dot - de->d_name] = '\0';
+
+      // Check if filename matches executable name
+      if (strcmp(filename, executable_name) == 0)
+      {
+        // Check if extension is "exe"
+        if (strcmp(last_dot + 1, "exe") == 0)
         {
-          printf("%s is %s\n", executable_name, full_path);
-          found = true;
-          break;
+          // Build full path
+          char full_path[1024];
+          snprintf(full_path, sizeof(full_path), "%s\\%s", path, de->d_name);
+
+          // Check if file exists and is a regular file
+          struct stat st;
+          if (stat(full_path, &st) == 0 && S_ISREG(st.st_mode))
+          {
+            printf("%s is %s\n", executable_name, path);
+            found = true;
+            break;
+          }
         }
       }
     }
