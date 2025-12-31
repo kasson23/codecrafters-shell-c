@@ -5,7 +5,11 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+// These headers are only available on Unix/Linux systems
+#ifdef __unix__
 #include <sys/wait.h>
+#endif
 
 // Print where an executable is found (for the "type" command)
 // This function searches through PATH directories to find an executable
@@ -241,6 +245,8 @@ int main()
     // strchr() finds the first space to split command from arguments
     char *space = strchr(user_input, ' ');
     char command_name[256];
+
+#ifdef __unix__
     char *args[256];   // Array of pointers to store each argument
     int arg_count = 1; // Start at 1 because first arg is the program name itself
 
@@ -273,12 +279,25 @@ int main()
       }
       args[arg_count] = NULL; // NULL terminator for execv()
     }
+#else
+    // On non-Unix systems, just extract the command name
+    if (space == NULL)
+    {
+      strcpy(command_name, user_input);
+    }
+    else
+    {
+      strncpy(command_name, user_input, space - user_input);
+      command_name[space - user_input] = '\0';
+    }
+#endif
 
     // Try to find and execute the program
     char *full_path = find_executable_in_path(paths, command_name);
 
     if (full_path != NULL)
     {
+#ifdef __unix__
       // fork() creates a new process (copy of current process)
       // Returns 0 in the child process, child's PID in parent
       pid_t pid = fork();
@@ -303,6 +322,9 @@ int main()
       {
         perror("fork");
       }
+#else
+      printf("External command execution not supported on this platform\n");
+#endif
 
       free(full_path); // Free the memory allocated by find_executable_in_path()
     }
@@ -314,7 +336,4 @@ int main()
     printf("$ ");
   }
   return 0;
-}
-}
-return 0;
 }
